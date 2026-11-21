@@ -74,14 +74,13 @@ Le domaine est discrétisé en éléments triangulaires. Sur chaque triangle, la
 
 La formulation faible du problème de référence s'écrit :
 
-\[
-\int_\Omega \lambda\nabla u\cdot\nabla v\,d\Omega
+$$
+\int_{\Omega} \lambda \nabla u \cdot \nabla v\, d\Omega
 =
-\int_\Omega fv\,d\Omega.
-\]
+\int_{\Omega} f v\, d\Omega.
+$$
 
 Les conditions aux limites sont ensuite intégrées dans la formulation numérique.
-
 Cette approche permet de transformer le problème continu en un système algébrique dont la résolution fournit une approximation du champ de température.
 
 ## 6. Implémentation informatique
