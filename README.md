@@ -36,18 +36,16 @@ Une représentation du maillage est disponible dans les figures du projet.
 
 Le problème thermique stationnaire étudié repose sur l'équation de diffusion :
 
-\[
--\nabla\cdot(\lambda\nabla u)=f
-\quad \text{dans }\Omega.
-\]
+$$
+-\nabla \cdot (\lambda \nabla u) = f
+$$
 
 Où :
 
-- \(\Omega\) désigne le domaine de l'habitation.
-- \(u\) représente le champ de température.
-- \(\lambda\) désigne le coefficient de diffusion thermique.
-- \(f\) représente le terme source associé aux zones de chauffage.
-
+- $\Omega$ désigne le domaine de l'habitation.
+- $u$ représente le champ de température.
+- $\lambda$ désigne le coefficient de diffusion thermique.
+- $f$ représente le terme source associé aux zones de chauffage.
 Le coefficient de diffusion est défini suivant les régions du domaine :
 
 | Région | Coefficient |
@@ -77,9 +75,8 @@ La formulation faible du problème de référence s'écrit :
 $$
 \int_{\Omega} \lambda \nabla u \cdot \nabla v\, d\Omega
 =
-\int_{\Omega} f v\, d\Omega.
+\int_{\Omega} f v\, d\Omega
 $$
-
 Les conditions aux limites sont ensuite intégrées dans la formulation numérique.
 Cette approche permet de transformer le problème continu en un système algébrique dont la résolution fournit une approximation du champ de température.
 
