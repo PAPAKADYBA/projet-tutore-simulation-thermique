@@ -1,0 +1,81 @@
+// ============================================================================
+// chauffage.edp
+// Projet tutore - MEF-P1 : chauffage d'une habitation
+// Maillage FreeFem++ de la coupe horizontale Omega (6 m x 5 m)
+// Resolution de reference du probleme stationnaire.
+// ============================================================================
+// -div(lambda(x) grad(u)) = f(x) dans Omega
+// -lambda du/dn = 0 sur Gamma_N (murs isolants)
+// u = uD sur Gamma_D (fenetres)
+// Labels : 1 = mur isolant, 2 = fenetre
+// Regions : air -> lambda1, radiateurs -> lambda2
+// ============================================================================
+
+real Lx = 6.0, Ly = 5.0;
+
+// ---- Bord exterieur ----
+border b1(t=0,1) { x=6*t;       y=0;         label=1; } // bas
+border b2(t=0,1) { x=6;         y=1*t;       label=1; } // droite basse
+border b3(t=0,1) { x=6;         y=1+1.5*t;   label=2; } // fenetre F2
+border b4(t=0,1) { x=6;         y=2.5+2.5*t; label=1; } // droite haute
+border b5(t=0,1) { x=6-6*t;     y=5;         label=1; } // haut
+border b6(t=0,1) { x=0;         y=5-1.5*t;   label=1; } // gauche haute
+border b7(t=0,1) { x=0;         y=3.5-1.5*t; label=2; } // fenetre F1
+border b8(t=0,1) { x=0;         y=2-2*t;     label=1; } // gauche basse
+
+// ---- Radiateur R1 : salon ----
+border r1a(t=0,1) { x=0.3+1.0*t; y=2.2;       label=10; }
+border r1b(t=0,1) { x=1.3;       y=2.2+1.0*t; label=10; }
+border r1c(t=0,1) { x=1.3-1.0*t; y=3.2;       label=10; }
+border r1d(t=0,1) { x=0.3;       y=3.2-1.0*t; label=10; }
+
+// ---- Radiateur R2 : chambre ----
+border r2a(t=0,1) { x=4.7+1.0*t; y=1.2;       label=20; }
+border r2b(t=0,1) { x=5.7;       y=1.2+1.0*t; label=20; }
+border r2c(t=0,1) { x=5.7-1.0*t; y=2.2;       label=20; }
+border r2d(t=0,1) { x=4.7;       y=2.2-1.0*t; label=20; }
+
+// ---- Construction du maillage ----
+int n=8;
+mesh Th = buildmesh(
+    b1(6*n) + b2(1*n) + b3(1.5*n) + b4(2.5*n)
+  + b5(6*n) + b6(1.5*n) + b7(1.5*n) + b8(2*n)
+  + r1a(6) + r1b(6) + r1c(6) + r1d(6)
+  + r2a(6) + r2b(6) + r2c(6) + r2d(6)
+);
+
+plot(Th, wait=true, cmm="Maillage de l'habitation (Th)");
+
+// ---- Reperage des regions ----
+int regAir = Th(0.1,0.1).region;
+int regR1  = Th(0.8,2.7).region;
+int regR2  = Th(5.2,1.7).region;
+
+// ---- Coefficients ----
+real lambda1 = 0.25;
+real lambda2 = 1.0;
+real fRad    = 50.0;
+real uD      = 15.0;
+
+fespace Ph(Th,P0);
+Ph lambda = lambda1*(region==regAir)
+          + lambda2*(region==regR1 || region==regR2);
+Ph fvol   = fRad*(region==regR1 || region==regR2);
+
+// ---- Espace P1 et resolution de reference ----
+fespace Vh(Th,P1);
+Vh u,v;
+
+solve chauffage(u,v)
+    = int2d(Th)(lambda*(dx(u)*dx(v)+dy(u)*dy(v)))
+    - int2d(Th)(fvol*v)
+    + on(2,u=uD);
+
+cout << "Temperature min = " << u[].min << " C" << endl;
+cout << "Temperature max = " << u[].max << " C" << endl;
+
+plot(u, fill=true, value=true, wait=true,
+     cmm="Champ de temperature u(x,y)");
+
+savemesh(Th,"habitation.mesh");
+{ ofstream fu("temperature.txt"); fu << u[] << endl; }

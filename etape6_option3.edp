@@ -1,0 +1,101 @@
+// ============================================================
+// ETAPE 6 - RESOLUTION DU MEME PROBLEME AVEC FREEFEM++
+// Comparaison avec la resolution Python de l'etape 5
+// ============================================================
+
+real lambdaAir = 0.25;
+real lambdaRad = 1.0;
+real fRad = 50.0;
+real uD = 15.0;
+real g = 5.0;
+
+// Lecture du meme maillage que l'etape 5
+mesh Th = readmesh("habitation_etape5.mesh");
+
+cout << "============================================================" << endl;
+cout << "ETAPE 6 - RESOLUTION FREEFEM++" << endl;
+cout << "============================================================" << endl;
+
+cout << "Fichier : habitation_etape5.mesh" << endl;
+cout << "Noeuds : " << Th.nv << endl;
+cout << "Triangles : " << Th.nt << endl;
+
+// Identification des regions
+int regAir = Th(0.1,0.1).region;
+int regR1 = Th(0.8,2.7).region;
+int regR2 = Th(5.2,1.7).region;
+
+cout << endl;
+cout << "Regions detectees :" << endl;
+cout << "Region " << regAir << " -> air" << endl;
+cout << "Region " << regR1 << " -> radiateur 1" << endl;
+cout << "Region " << regR2 << " -> radiateur 2" << endl;
+
+// Espace d'elements finis P1
+fespace Vh(Th,P1);
+
+Vh u,v;
+
+// Probleme thermique
+problem Chauffage(u,v)
+=
+int2d(Th,regAir)(
+    lambdaAir*(dx(u)*dx(v) + dy(u)*dy(v))
+)
++ int2d(Th,regR1)(
+    lambdaRad*(dx(u)*dx(v) + dy(u)*dy(v))
+)
++ int2d(Th,regR2)(
+    lambdaRad*(dx(u)*dx(v) + dy(u)*dy(v))
+)
+- int2d(Th,regR1)(
+    fRad*v
+)
+- int2d(Th,regR2)(
+    fRad*v
+)
++ int1d(Th,3)(
+    g*v
+)
++ on(2,u=uD);
+
+// Resolution
+cout << endl;
+cout << "Resolution du systeme..." << endl;
+
+Chauffage;
+
+// Calcul des temperatures
+real Tmin = u[].min;
+real Tmax = u[].max;
+
+real somme = int2d(Th)(u);
+real aire = int2d(Th)(1.0);
+real Tmoy = somme/aire;
+
+cout << endl;
+cout << "CONTROLE DE LA MOYENNE" << endl;
+cout << "Aire du domaine = " << aire << endl;
+cout << "Integral de u = " << somme << endl;
+cout << "Moyenne = " << Tmoy << endl;
+// Affichage des resultats
+cout << endl;
+cout << "============================================================" << endl;
+cout << "RESULTATS ETAPE 6 - FREEFEM++" << endl;
+cout << "============================================================" << endl;
+
+cout << "Temperature minimale = "
+     << Tmin << " degC" << endl;
+
+cout << "Temperature maximale = "
+     << Tmax << " degC" << endl;
+
+cout << "Temperature moyenne = "
+     << Tmoy << " degC" << endl;
+
+cout << "============================================================" << endl;
+cout << "FIN DE L'ETAPE 6" << endl;
+cout << "============================================================" << endl;
+
+// Visualisation de la temperature
+plot(u, wait=true);
