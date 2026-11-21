@@ -71,13 +71,14 @@ La résolution numérique repose sur la méthode des éléments finis P1.
 
 Le domaine est discrétisé en éléments triangulaires. Sur chaque triangle, la température est approximée par une fonction affine.
 
+
 La formulation faible du problème de référence s'écrit :
 
-$$
+```math
 \int_{\Omega} \lambda \nabla u \cdot \nabla v\, d\Omega
 =
 \int_{\Omega} f v\, d\Omega
-$$
+```
 
 Les conditions aux limites sont ensuite intégrées dans la formulation numérique.
 
