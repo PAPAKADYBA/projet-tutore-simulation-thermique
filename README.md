@@ -64,6 +64,7 @@ Le modèle de référence utilise :
 
 Une variante numérique étudiée dans le projet introduit également un terme de flux de Neumann non homogène sur une frontière identifiée par le label 3.
 
+
 ## 5. Méthode numérique : éléments finis P1
 
 La résolution numérique repose sur la méthode des éléments finis P1.
@@ -77,7 +78,9 @@ $$
 =
 \int_{\Omega} f v\, d\Omega
 $$
+
 Les conditions aux limites sont ensuite intégrées dans la formulation numérique.
+
 Cette approche permet de transformer le problème continu en un système algébrique dont la résolution fournit une approximation du champ de température.
 
 ## 6. Implémentation informatique
